@@ -1,5 +1,7 @@
 var mc = require("minecraft-protocol");
 const states = mc.states;
+const config = require("config");
+const hostile = require("hostile");
 
 const srv = mc.createServer({
 	"online-mode": true,
@@ -8,6 +10,20 @@ const srv = mc.createServer({
 	keepAlive: false,
 	version: "1.8.9",
 });
+
+const configfile = {
+	email: config.get("email"),
+	password: config.get("password"),
+	auth: config.get("auth"),
+	levelhead: config.get("levelhead"),
+};
+
+if (configfile.levelhead) {
+	hostile.set("127.0.0.1", "hypixel.net.hypixel.io");
+	console.log("[+] Added Hypixel Line To Host File");
+}
+
+console.log("[+] Proxy has been started.");
 
 srv.on("login", function (client) {
 	console.log(client.profile.properties);
@@ -34,8 +50,8 @@ srv.on("login", function (client) {
 	const targetClient = mc.createClient({
 		host: "hypixel.net",
 		port: 25565,
-		username: "", //CHANGE THIS TO YOUR MINECRAFT EMAIL
-		password: "", //CHANGE THIS TO YOUR MINECRAFT PASSWORD
+		username: "",
+		password: "",
 		keepAlive: false,
 		version: "1.8.9",
 	});
@@ -48,9 +64,11 @@ srv.on("login", function (client) {
 	});
 
 	targetClient.on("packet", function (data, meta) {
-		if (meta.name === 'custom_payload' && data.channel === 'MC|Brand') {
-			data.data = Buffer.from('<XeBungee (git:XeBungee-Bootstrap:1.16-R0.5-SNAPSHOT:a2e1df4)')
-		  }
+		if (meta.name === "custom_payload" && data.channel === "MC|Brand") {
+			data.data = Buffer.from(
+				"<XeBungee (git:XeBungee-Bootstrap:1.16-R0.5-SNAPSHOT:a2e1df4)"
+			);
+		}
 		if (meta.state === states.PLAY && client.state === states.PLAY) {
 			if (!endedClient) {
 				client.write(meta.name, data);
@@ -120,3 +138,39 @@ srv.on("login", function (client) {
 		}
 	});
 });
+
+async function exitHandler(evtOrExitCodeOrError) {
+	try {
+		if (configfile.levelhead) {
+			return await undoHosts();
+		}
+		console.log("[+] Proxy has been stopped.");
+	} catch (e) {
+		console.error("EXIT HANDLER ERROR", e);
+	}
+
+	process.exit(isNaN(+evtOrExitCodeOrError) ? 1 : +evtOrExitCodeOrError);
+}
+
+[
+	"beforeExit",
+	"uncaughtException",
+	"unhandledRejection",
+	"SIGHUP",
+	"SIGINT",
+	"SIGQUIT",
+	"SIGILL",
+	"SIGTRAP",
+	"SIGABRT",
+	"SIGBUS",
+	"SIGFPE",
+	"SIGUSR1",
+	"SIGSEGV",
+	"SIGUSR2",
+	"SIGTERM",
+].forEach((evt) => process.on(evt, exitHandler));
+
+async function undoHosts() {
+	hostile.remove("127.0.0.1", "hypixel.net.hypixel.io");
+	console.log("[+] Removed Hypixel Line From Host File");
+}

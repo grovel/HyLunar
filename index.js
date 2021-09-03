@@ -50,9 +50,10 @@ srv.on("login", function (client) {
 	const targetClient = mc.createClient({
 		host: "hypixel.net",
 		port: 25565,
-		username: "",
-		password: "",
+		username: configfile.email,
+		password: configfile.password,
 		keepAlive: false,
+		auth: configfile.auth,
 		version: "1.8.9",
 	});
 	client.on("packet", function (data, meta) {

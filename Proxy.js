@@ -35,6 +35,7 @@ class Proxy {
 			);
 			hostile.set("127.0.0.1", "hypixel.net.hypixel.io");
 			console.log(chalk.greenBright("[+] Added Hypixel Line To Host File"));
+			console.log(chalk.greenBright("!IMPORTANT! Join hypixel.net.hypixel.io"));
 		}
 
 		console.log(chalk.greenBright("[+] Proxy has been started."));

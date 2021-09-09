@@ -1,6 +1,7 @@
 {
     "email": "",
     "password": "",
-    "auth": "",
-    "levelhead": true
+    "auth": "mojang",
+    "port": 25565,
+    "hypixelmods": true
 }

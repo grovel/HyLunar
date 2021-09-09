@@ -9,8 +9,10 @@
   "author": "Deagan",
   "license": "ISC",
   "dependencies": {
+    "chalk": "^4.1.2",
     "config": "^3.3.6",
     "hostile": "^1.3.3",
+    "hypixel-proxy": "^1.0.7",
     "minecraft-protocol": "^1.26.5"
   }
 }
